@@ -1,20 +1,4 @@
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { env } from "./env";
-
-const r2 = new S3Client({
-  region: "auto",
-  endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: env.R2_ACCESS_KEY_ID,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-  },
-});
+import { put } from "@vercel/blob";
 
 type UploadAudioOptions = {
   buffer: Buffer;
@@ -27,29 +11,13 @@ export async function uploadAudio({
   key,
   contentType = "audio/wav",
 }: UploadAudioOptions): Promise<void> {
-  await r2.send(
-    new PutObjectCommand({
-      Bucket: env.R2_BUCKET_NAME,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-    }),
-  );
-};
-
-export async function deleteAudio(key: string): Promise<void> {
-  await r2.send(
-    new DeleteObjectCommand({
-      Bucket: env.R2_BUCKET_NAME,
-      Key: key,
-    }),
-  );
-};
-
-export async function getSignedAudioUrl(key: string): Promise<string> {
-  const command = new GetObjectCommand({
-    Bucket: env.R2_BUCKET_NAME,
-    Key: key,
+  // We use the 'key' as the path in Vercel Blob
+  await put(key, buffer, {
+    access: "public",
+    contentType: contentType,
+    addRandomSuffix: false, // This keeps your file names exactly as you set them
   });
-  return getSignedUrl(r2, command, { expiresIn: 3600 }); // 1 hour
-};
+}
+
+// If your app uses a getDownloadUrl function elsewhere, 
+// Vercel Blob URLs are usually public, so you can just return the URL directly.

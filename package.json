@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "postinstall": "prisma generate",
     "lint": "eslint",
@@ -29,6 +29,7 @@
     "@trpc/server": "^11.10.0",
     "@trpc/tanstack-react-query": "^11.10.0",
     "@types/recordrtc": "^5.6.15",
+    "@vercel/blob": "^2.3.3",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
