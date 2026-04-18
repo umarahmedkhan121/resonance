@@ -28,7 +28,7 @@ const envSchema = z.object({
   R2_ACCOUNT_ID: z.string().min(1),
   R2_ACCESS_KEY_ID: z.string().min(1),
   R2_SECRET_ACCESS_KEY: z.string().min(1),
-  R2_BUCKET_NAME: z.string().min(1),
+  blob_storage_NAME: z.string().min(1),
 });
 
 const env = envSchema.parse(process.env);
@@ -171,7 +171,7 @@ async function uploadSystemVoiceAudio({
   contentType: string;
 }) {
   const commandInput: PutObjectCommandInput = {
-    Bucket: env.R2_BUCKET_NAME,
+    Bucket: env.blob_storage_NAME,
     Key: key,
     Body: buffer,
     ContentType: contentType,
@@ -192,11 +192,11 @@ async function seedSystemVoice(name: string) {
   });
 
   if (existingSystemVoice) {
-    const r2ObjectKey = `voices/system/${existingSystemVoice.id}`;
+    const voiceKey = `voices/system/${existingSystemVoice.id}`;
     const meta = systemVoiceMetadata[name];
 
     await uploadSystemVoiceAudio({
-      key: r2ObjectKey,
+      key: voiceKey,
       buffer,
       contentType,
     });
@@ -204,7 +204,7 @@ async function seedSystemVoice(name: string) {
     await prisma.voice.update({
       where: { id: existingSystemVoice.id },
       data: {
-        r2ObjectKey,
+        voiceKey,
         ...(meta && {
           description: meta.description,
           category: meta.category,
@@ -233,11 +233,11 @@ async function seedSystemVoice(name: string) {
     },
   });
 
-  const r2ObjectKey = `voices/system/${voice.id}`;
+  const voiceKey = `voices/system/${voice.id}`;
 
   try {
     await uploadSystemVoiceAudio({
-      key: r2ObjectKey,
+      key: voiceKey,
       buffer,
       contentType,
     });
@@ -247,7 +247,7 @@ async function seedSystemVoice(name: string) {
         id: voice.id,
       },
       data: {
-        r2ObjectKey,
+        voiceKey,
       },
     });
   } catch (error) {

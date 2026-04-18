@@ -13,7 +13,7 @@ CREATE TABLE "Voice" (
     "category" "VoiceCategory" NOT NULL DEFAULT 'GENERAL',
     "language" TEXT NOT NULL DEFAULT 'en-US',
     "variant" "VoiceVariant" NOT NULL,
-    "r2ObjectKey" TEXT,
+    "voiceKey" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -27,7 +27,7 @@ CREATE TABLE "Generation" (
     "voiceId" TEXT,
     "text" TEXT NOT NULL,
     "voiceName" TEXT NOT NULL,
-    "r2ObjectKey" TEXT,
+    "voiceKey" TEXT,
     "temperature" DOUBLE PRECISION NOT NULL,
     "topP" DOUBLE PRECISION NOT NULL,
     "topK" INTEGER NOT NULL,

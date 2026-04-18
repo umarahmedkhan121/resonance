@@ -4,7 +4,7 @@ import { z } from "zod";
 import { polar } from "@/lib/polar";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/db";
-import { uploadAudio } from "@/lib/r2";
+import { uploadAudio } from "@/lib/actions";
 import { VOICE_CATEGORIES } from "@/features/voices/data/voice-categories";
 import type { VoiceCategory } from "@/generated/prisma/client";
 
@@ -132,11 +132,11 @@ export async function POST(request: Request) {
     });
 
     createdVoiceId = voice.id;
-    const r2ObjectKey = `voices/orgs/${orgId}/${voice.id}`;
+    const voiceKey = `voices/orgs/${orgId}/${voice.id}`;
 
     await uploadAudio({
       buffer: Buffer.from(fileBuffer),
-      key: r2ObjectKey,
+      key: voiceKey,
       contentType: normalizedContentType,
     });
 
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
         id: voice.id,
       },
       data: {
-        r2ObjectKey,
+        voiceKey,
       },
     });
   } catch {

@@ -5,7 +5,7 @@ import { env } from "@/lib/env";
 import { TRPCError } from "@trpc/server";
 import { chatterbox } from "@/lib/chatterbox-client";
 import { prisma } from "@/lib/db";
-import { uploadAudio } from "@/lib/r2";
+import { uploadAudio } from "@/lib/actions";
 import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
 import { createTRPCRouter, orgProcedure } from "../init";
 
@@ -17,7 +17,7 @@ export const generationsRouter = createTRPCRouter({
         where: { id: input.id, orgId: ctx.orgId },
         omit: {
           orgId: true,
-          r2ObjectKey: true,
+          voiceKey: true,
         },
       });
 
@@ -37,7 +37,7 @@ export const generationsRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
       omit: {
         orgId: true,
-        r2ObjectKey: true,
+        voiceKey: true,
       },
     });
 
@@ -89,7 +89,7 @@ export const generationsRouter = createTRPCRouter({
         select: {
           id: true,
           name: true,
-          r2ObjectKey: true,
+          voiceKey: true,
         },
       });
 
@@ -100,7 +100,7 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
-      if (!voice.r2ObjectKey) {
+      if (!voice.voiceKey) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message: "Voice audio not available",
@@ -110,7 +110,7 @@ export const generationsRouter = createTRPCRouter({
       const { data, error } = await chatterbox.POST("/generate", {
         body: {
           prompt: input.text,
-          voice_key: voice.r2ObjectKey,
+          voice_key: voice.voiceKey,
           temperature: input.temperature,
           top_p: input.topP,
           top_k: input.topK,
@@ -142,7 +142,7 @@ export const generationsRouter = createTRPCRouter({
 
       const buffer = Buffer.from(data);
       let generationId: string | null = null;
-      let r2ObjectKey: string | null = null;
+      let voiceKey: string | null = null;
 
       try {
         const generation = await prisma.generation.create({
@@ -162,16 +162,16 @@ export const generationsRouter = createTRPCRouter({
         });
 
         generationId = generation.id;
-        r2ObjectKey = `generations/orgs/${ctx.orgId}/${generation.id}`;
+        voiceKey = `generations/orgs/${ctx.orgId}/${generation.id}`;
 
-        await uploadAudio({ buffer, key: r2ObjectKey });
+        await uploadAudio({ buffer, key: voiceKey });
 
         await prisma.generation.update({
           where: {
             id: generation.id,
           },
           data: {
-            r2ObjectKey,
+            voiceKey,
           },
         });
 
@@ -201,7 +201,7 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
-      if (!generationId || !r2ObjectKey) {
+      if (!generationId || !voiceKey) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to store generated audio",

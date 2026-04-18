@@ -11,8 +11,6 @@
     "sync-api": "tsx scripts/sync-api.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.997.0",
-    "@aws-sdk/s3-request-presigner": "^3.997.0",
     "@base-ui/react": "^1.2.0",
     "@clerk/nextjs": "^6.38.1",
     "@dicebear/collection": "^9.3.2",

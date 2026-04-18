@@ -134,7 +134,7 @@ The included `chatterbox_tts.py` is adapted from [Modal's official Chatterbox TT
 Before deploying, update `chatterbox_tts.py` with your R2 credentials:
 
 ```python
-R2_BUCKET_NAME = "<your-r2-bucket-name-here>"
+blob_storage_NAME = "<your-r2-bucket-name-here>"
 R2_ACCOUNT_ID = "<your-r2-account-id-here>"
 ```
 
