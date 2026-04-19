@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { uploadAudio } from "@/lib/actions";
 import { VOICE_CATEGORIES } from "@/features/voices/data/voice-categories";
-import type { VoiceCategory } from "@/generated/prisma/client";
+import type { VoiceCategory } from "@prisma/client";
 
 const createVoiceSchema = z.object({
   name: z.string().min(1, "Voice name is required"),

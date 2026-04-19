@@ -31,3 +31,8 @@ export async function uploadAudio({
 export async function deleteAudio(url: string): Promise<void> {
   await del(url);
 }
+export async function getSignedAudioUrl(url: string) {
+  // Since we use Vercel Blob now, the URLs are already directly accessible.
+  // We just return the URL as-is to keep the rest of the app happy!
+  return url;
+}
